@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions
+     name="${serverName}"
+     targetNamespace="http://mss.cmcc.com/${serverName}"
+     xmlns="http://schemas.xmlsoap.org/wsdl/"
+     xmlns:tns="http://mss.cmcc.com/${serverName}"
+     xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/"
+     xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+     xmlns:client="http://mss.cmcc.com/${serverName}"
+    >
+    <types>
+        <schema xmlns="http://www.w3.org/2001/XMLSchema">
+            <import namespace="http://mss.cmcc.com/${serverName}"
+                 schemaLocation="${serverName}.xsd"/>
+        </schema>
+    </types>
+    <message name="${serverName}RequestMessage">
+        <part name="payload" element="tns:${serverName}Request"/>
+    </message>
+    <message name="${serverName}ResponseMessage">
+        <part name="payload" element="tns:${serverName}Response"/>
+    </message>
+    <portType name="${serverName}">
+        <operation name="process">
+            <input message="tns:${serverName}RequestMessage"/>
+            <output message="tns:${serverName}ResponseMessage"/>
+        </operation>
+    </portType>
+    <binding name="${serverName}Binding" type="tns:${serverName}">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <operation name="process">
+            <soap:operation style="document" soapAction="process"/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+    </binding>
+    <service name="${serverName}">
+        <port name="${serverName}Port" binding="tns:${serverName}Binding">
+            <soap:address location="http://soadev:7777/orabpel/default/${serverName}/1.0"/>
+        </port>
+    </service>
+  <plnk:partnerLinkType name="${serverName}">
+    <plnk:role name="${serverName}Provider">
+      <plnk:portType name="tns:${serverName}"/>
+    </plnk:role>
+  </plnk:partnerLinkType>
+</definitions>

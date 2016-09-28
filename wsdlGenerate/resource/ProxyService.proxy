@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-fragment xmlns:ser="http://www.bea.com/wli/sb/services" xmlns:tran="http://www.bea.com/wli/sb/transports" xmlns:env="http://www.bea.com/wli/config/env" xmlns:http="http://www.bea.com/wli/sb/transports/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:con="http://www.bea.com/wli/sb/pipeline/config">
+  <ser:coreEntry isProxy="true" isEnabled="true">
+    <ser:binding type="SOAP" isSoap12="false" xsi:type="con:SoapBindingType" xmlns:con="http://www.bea.com/wli/sb/services/bindings/config">
+      <con:wsdl ref="SHMC/Resources/WSDL/${serverName}/${serverName}"/>
+      <con:port>
+        <con:name>${serverName}Port</con:name>
+        <con:namespace>http://mss.cmcc.com/${serverName}</con:namespace>
+      </con:port>
+      <con:selector type="SOAP body"/>
+    </ser:binding>
+    <ser:monitoring isEnabled="false">
+      <ser:aggregationInterval>10</ser:aggregationInterval>
+      <ser:pipelineMonitoringLevel>Pipeline</ser:pipelineMonitoringLevel>
+    </ser:monitoring>
+    <ser:reporting>true</ser:reporting>
+    <ser:logging isEnabled="true">
+      <ser:logLevel>debug</ser:logLevel>
+    </ser:logging>
+    <ser:sla-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:sla-alerting>
+    <ser:pipeline-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:pipeline-alerting>
+    <ser:ws-policy>
+      <ser:binding-mode>wsdl-policy-attachments</ser:binding-mode>
+    </ser:ws-policy>
+  </ser:coreEntry>
+  <ser:endpointConfig>
+    <tran:provider-id>http</tran:provider-id>
+    <tran:inbound>true</tran:inbound>
+    <tran:URI>
+      <env:value>/SHMC/ProxyService/SC/${serverName}/${serverName}</env:value>
+    </tran:URI>
+    <tran:inbound-properties/>
+    <tran:all-headers>true</tran:all-headers>
+    <tran:provider-specific>
+      <http:inbound-properties/>
+    </tran:provider-specific>
+  </ser:endpointConfig>
+  <ser:router>
+    <con:pipeline type="request" name="PipelinePair_request">
+      <con:stage name="getOSBInstanceID" xmlns:con3="http://www.bea.com/wli/sb/typesystem/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config">
+        <con:context/>
+        <con:actions>
+          <con1:assign varName="SC_OT_GetOSBInstanceIDSrvRequest">
+            <con2:id>_ActionId-7987006613725141329--265a5d4e.15659e5a71c.-7f85</con2:id>
+            <con1:expr>
+              <con2:xqueryText>fn-bea:inlinedXML('&lt;osb:getRequestId xmlns:osb="http://osb.zte.com/"/>')</con2:xqueryText>
+            </con1:expr>
+          </con1:assign>
+          <con1:wsCallout>
+            <con2:id>_ActionId-7987006613725141329--265a5d4e.15659e5a71c.-7f84</con2:id>
+            <con1:service xsi:type="ref:BusinessServiceRef" ref="SHMC/BusinessService/OT/SC_OT_GetOSBInstanceIDSrv" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+            <con1:operation>getRequestId</con1:operation>
+            <con1:request>
+              <con1:body>$SC_OT_GetOSBInstanceIDSrvRequest</con1:body>
+            </con1:request>
+            <con1:response>
+              <con1:body>SC_OT_GetOSBInstanceIDSrvResponse</con1:body>
+            </con1:response>
+            <con1:requestTransform/>
+            <con1:responseTransform/>
+          </con1:wsCallout>
+        </con:actions>
+      </con:stage>
+      <con:stage name="OSBFilter" xmlns:con3="http://www.bea.com/wli/sb/typesystem/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config">
+        <con:context>
+          <con2:varNsDecl namespace="http://mss.cmcc.com/MsgHeader" prefix="msg"/>
+          <con2:varNsDecl namespace="http://osb.zte.com/" prefix="osb"/>
+          <con2:varNsDecl namespace="http://mss.cmcc.com/${serverName}" prefix="sb2"/>
+          <con3:variable name="SC_OT_GetOSBInstanceIDSrvResquest" path="$SC_OT_GetOSBInstanceIDSrvResquest" asChild="false">
+            <con3:schema ref="SHMC/Resources/WSDL/SC_OT_GetOSBInstanceIDSrv/SC_OT_GetOSBInstanceIDSrv" element="getRequestId"/>
+          </con3:variable>
+          <con3:variable name="KEY_SEQ" path="$KEY_SEQ">
+            <con3:xml-schema type="string"/>
+          </con3:variable>
+          <con3:variable name="SC_OT_GetOSBInstanceIDSrvResponse" path="$SC_OT_GetOSBInstanceIDSrvResponse" asChild="false">
+            <con3:schema ref="SHMC/Resources/WSDL/SC_OT_GetOSBInstanceIDSrv/SC_OT_GetOSBInstanceIDSrv" element="getRequestIdResponse"/>
+          </con3:variable>
+          <con3:variable name="SC_OT_OSB_FilterSrvResquest" path="$SC_OT_OSB_FilterSrvResquest" asChild="false">
+            <con3:schema ref="SHMC/Resources/WSDL/SC_OT_OSB_FilterSrv/SC_OT_OSB_FilterSrv" element="process"/>
+          </con3:variable>
+          <con3:variable name="SC_OT_OSB_FilterSrvResponse" path="$SC_OT_OSB_FilterSrvResponse" asChild="false">
+            <con3:schema ref="SHMC/Resources/WSDL/SC_OT_OSB_FilterSrv/SC_OT_OSB_FilterSrv" element="processResponse"/>
+          </con3:variable>
+          <con3:variable name="TEXT" path="$TEXT">
+            <con3:xml-schema type="string"/>
+          </con3:variable>
+        </con:context>
+        <con:actions>
+          <con1:assign varName="SC_OT_OSB_FilterSrvRequest">
+            <con2:id>_ActionId-7987006613725141329--265a5d4e.15659e5a71c.-7f83</con2:id>
+            <con1:expr>
+              <con2:xqueryText><![CDATA[fn-bea:inlinedXML(fn:concat('<osb:process xmlns:osb="http://osb.zte.com/"><arg0><msgHeader_Parameter><ENVIRONMENT_NAME>',fn:data($body/sb2:${serverName}Request/sb2:MsgHeader/msg:ENVIRONMENT_NAME),'</ENVIRONMENT_NAME><PROVINCE_CODE>',fn:data($body/sb2:${serverName}Request/sb2:MsgHeader/msg:PROVINCE_CODE),'</PROVINCE_CODE><SOURCESYSTEMID>',fn:data($body/sb2:${serverName}Request/sb2:MsgHeader/msg:SOURCESYSTEMID),'</SOURCESYSTEMID><SOURCESYSTEMNAME>',fn:data($body/sb2:${serverName}Request/sb2:MsgHeader/msg:SOURCESYSTEMNAME),'</SOURCESYSTEMNAME></msgHeader_Parameter><request_Parameter><CLIENT_ADDRESS>',fn:data($inbound/ctx:transport/ctx:request/http:client-address),'</CLIENT_ADDRESS><SERVICE_HOST>',fn:data($inbound/ctx:transport/ctx:request/http:client-host),'</SERVICE_HOST><SOAPAction>',fn:data($inbound/ctx:service/ctx:operation),'</SOAPAction><URI>',fn:data($inbound/ctx:transport/ctx:uri),'</URI></request_Parameter></arg0></osb:process>'))]]></con2:xqueryText>
+            </con1:expr>
+          </con1:assign>
+          <con1:assign varName="TEXT">
+            <con2:id>_ActionId-7987006613725141329--265a5d4e.15659e5a71c.-7f82</con2:id>
+            <con1:expr>
+              <con2:xqueryText>0</con2:xqueryText>
+            </con1:expr>
+          </con1:assign>
+          <con1:assign varName="KEY_SEQ">
+            <con2:id>_ActionId-7987006613725141329--265a5d4e.15659e5a71c.-7f81</con2:id>
+            <con1:expr>
+              <con2:xqueryText>&lt;Text>0&lt;/Text></con2:xqueryText>
+            </con1:expr>
+          </con1:assign>
+          <con1:wsCallout>
+            <con2:id>_ActionId-7987006613725141329--265a5d4e.15659e5a71c.-7f7b</con2:id>
+            <con1:service xsi:type="ref:BusinessServiceRef" ref="SHMC/BusinessService/OT/SC_OT_OSB_FilterSrv" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+            <con1:operation>process</con1:operation>
+            <con1:request>
+              <con1:body>$SC_OT_OSB_FilterSrvRequest</con1:body>
+            </con1:request>
+            <con1:response>
+              <con1:body>SC_OT_OSB_FilterSrvResponse</con1:body>
+            </con1:response>
+            <con1:requestTransform>
+              <con4:report>
+                <con2:id>_ActionId-7987006613725141329--265a5d4e.15659e5a71c.-7f80</con2:id>
+                <con4:expr>
+                  <con2:xqueryText>$body</con2:xqueryText>
+                </con4:expr>
+                <con4:labels>
+                  <con4:key>KEY</con4:key>
+                  <con4:varName>SC_OT_GetOSBInstanceIDSrvResponse</con4:varName>
+                  <con4:value>
+                    <con2:xpathText>./return</con2:xpathText>
+                  </con4:value>
+                </con4:labels>
+                <con4:labels>
+                  <con4:key>SEQ</con4:key>
+                  <con4:varName>KEY_SEQ</con4:varName>
+                  <con4:value>
+                    <con2:xpathText>.</con2:xpathText>
+                  </con4:value>
+                </con4:labels>
+                <con4:labels>
+                  <con4:key>IP</con4:key>
+                  <con4:varName>inbound</con4:varName>
+                  <con4:value>
+                    <con2:xpathText>./ctx:transport/ctx:request/http:client-address</con2:xpathText>
+                  </con4:value>
+                </con4:labels>
+              </con4:report>
+            </con1:requestTransform>
+            <con1:responseTransform>
+              <con1:ifThenElse>
+                <con2:id>_ActionId-7987006613725141329--265a5d4e.15659e5a71c.-7f7f</con2:id>
+                <con1:case>
+                  <con1:condition>
+                    <con2:xqueryConditionExpr>
+                      <con2:compExpr operator="=">
+                        <con2:leftPath>$SC_OT_OSB_FilterSrvResponse/return/ACCESS_FLAG</con2:leftPath>
+                        <con2:rightPath>'N'</con2:rightPath>
+                      </con2:compExpr>
+                    </con2:xqueryConditionExpr>
+                  </con1:condition>
+                  <con1:actions>
+                    <con1:assign varName="KEY_SEQ">
+                      <con2:id>_ActionId-7987006613725141329--265a5d4e.15659e5a71c.-7f7e</con2:id>
+                      <con1:expr>
+                        <con2:xqueryText>&lt;TEXT>999&lt;/TEXT></con2:xqueryText>
+                      </con1:expr>
+                    </con1:assign>
+                    <con4:report>
+                      <con2:id>_ActionId-7987006613725141329--265a5d4e.15659e5a71c.-7f7d</con2:id>
+                      <con4:expr>
+                        <con2:xqueryText>$SC_OT_OSB_FilterSrvResponse</con2:xqueryText>
+                      </con4:expr>
+                      <con4:labels>
+                        <con4:key>KEY</con4:key>
+                        <con4:varName>SC_OT_GetOSBInstanceIDSrvResponse</con4:varName>
+                        <con4:value>
+                          <con2:xpathText>./return</con2:xpathText>
+                        </con4:value>
+                      </con4:labels>
+                      <con4:labels>
+                        <con4:key>SEQ</con4:key>
+                        <con4:varName>KEY_SEQ</con4:varName>
+                        <con4:value>
+                          <con2:xpathText>.</con2:xpathText>
+                        </con4:value>
+                      </con4:labels>
+                      <con4:labels>
+                        <con4:key>IP</con4:key>
+                        <con4:varName>inbound</con4:varName>
+                        <con4:value>
+                          <con2:xpathText>./ctx:transport/ctx:request/http:client-address</con2:xpathText>
+                        </con4:value>
+                      </con4:labels>
+                    </con4:report>
+                    <con1:Error>
+                      <con2:id>_ActionId-7987006613725141329--265a5d4e.15659e5a71c.-7f7c</con2:id>
+                      <con1:errCode>SOA Governance System Error ： 2001</con1:errCode>
+                      <con1:message>系统未注册或策略受制，拒接访问。请联系SOA接口平台中央组。</con1:message>
+                    </con1:Error>
+                  </con1:actions>
+                </con1:case>
+              </con1:ifThenElse>
+            </con1:responseTransform>
+          </con1:wsCallout>
+        </con:actions>
+      </con:stage>
+    </con:pipeline>
+    <con:pipeline type="response" name="PipelinePair_response">
+      <con:stage name="Reply" xmlns:con3="http://www.bea.com/wli/sb/typesystem/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config">
+        <con:context>
+          <con2:varNsDecl namespace="http://osb.zte.com/" prefix="osb"/>
+          <con2:varNsDecl namespace="http://mss.cmcc.com/${serverName}" prefix="sb2"/>
+          <con3:variable name="SC_OT_GetOSBInstanceIDSrvResponse" path="$SC_OT_GetOSBInstanceIDSrvResponse" asChild="false">
+            <con3:schema ref="SHMC/Resources/WSDL/SC_OT_GetOSBInstanceIDSrv/SC_OT_GetOSBInstanceIDSrv" element="getRequestIdResponse"/>
+          </con3:variable>
+          <con3:variable name="SC_OT_OSB_FilterSrvResponse" path="$SC_OT_OSB_FilterSrvResponse" asChild="false">
+            <con3:schema ref="SHMC/Resources/WSDL/SC_OT_OSB_FilterSrv/SC_OT_OSB_FilterSrv" element="processResponse"/>
+          </con3:variable>
+        </con:context>
+        <con:actions>
+          <con1:assign varName="KEY_SEQ">
+            <con2:id>_ActionId-7987006613725141329--265a5d4e.15659e5a71c.-7f7a</con2:id>
+            <con1:expr>
+              <con2:xqueryText>&lt;TEXT>999&lt;/TEXT></con2:xqueryText>
+            </con1:expr>
+          </con1:assign>
+          <con1:replace varName="body" contents-only="true">
+            <con2:id>_ActionId-7987006613725141329--265a5d4e.15659e5a71c.-7f79</con2:id>
+            <con1:location>
+              <con2:xpathText>./sb2:${serverName}Response/sb2:INSTANCE_ID</con2:xpathText>
+            </con1:location>
+            <con1:expr>
+              <con2:xqueryText>fn:data($SC_OT_GetOSBInstanceIDSrvResponse/return)</con2:xqueryText>
+            </con1:expr>
+          </con1:replace>
+          <con4:report>
+            <con2:id>_ActionId-7987006613725141329--265a5d4e.15659e5a71c.-7f78</con2:id>
+            <con4:expr>
+              <con2:xqueryText>$body</con2:xqueryText>
+            </con4:expr>
+            <con4:labels>
+              <con4:key>KEY</con4:key>
+              <con4:varName>SC_OT_GetOSBInstanceIDSrvResponse</con4:varName>
+              <con4:value>
+                <con2:xpathText>./return</con2:xpathText>
+              </con4:value>
+            </con4:labels>
+            <con4:labels>
+              <con4:key>SEQ</con4:key>
+              <con4:varName>KEY_SEQ</con4:varName>
+              <con4:value>
+                <con2:xpathText>.</con2:xpathText>
+              </con4:value>
+            </con4:labels>
+            <con4:labels>
+              <con4:key>IP</con4:key>
+              <con4:varName>inbound</con4:varName>
+              <con4:value>
+                <con2:xpathText>./ctx:transport/ctx:request/http:client-address</con2:xpathText>
+              </con4:value>
+            </con4:labels>
+          </con4:report>
+        </con:actions>
+      </con:stage>
+    </con:pipeline>
+    <con:pipeline type="error" name="_onErrorHandler-7987006613725141329--265a5d4e.15659e5a71c.-7f02">
+      <con:stage name="stage_Exception" xmlns:con3="http://www.bea.com/wli/sb/typesystem/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config">
+        <con:context>
+          <con2:varNsDecl namespace="http://osb.zte.com/" prefix="osb"/>
+          <con3:variable name="SC_OT_GetOSBInstanceIDSrvResponse" path="$SC_OT_GetOSBInstanceIDSrvResponse" asChild="false">
+            <con3:schema ref="SHMC/Resources/WSDL/SC_OT_GetOSBInstanceIDSrv/SC_OT_GetOSBInstanceIDSrv" element="getRequestIdResponse"/>
+          </con3:variable>
+          <con3:variable name="TEXT" path="$TEXT">
+            <con3:xml-schema type="string"/>
+          </con3:variable>
+        </con:context>
+        <con:actions>
+          <con1:assign varName="fault">
+            <con2:id>_ActionId-7987006613725141329--265a5d4e.15659e5a71c.-7f01</con2:id>
+            <con1:expr>
+              <con2:xqueryText><![CDATA[<con:fault xmlns:con="http://www.bea.com/wli/sb/context">
+	<con:errorCode>{data($Body/soap-env:Fault/faultcode)}</con:errorCode>
+	<con:reason>{data($body/soap-env:Fault/faultstring)}</con:reason>
+	<con:location>
+		<con:node>提供方服务异常</con:node>
+		<con:path>response-pipeline</con:path>
+	</con:location>
+</con:fault>]]></con2:xqueryText>
+            </con1:expr>
+          </con1:assign>
+          <con1:assign varName="KEY_SEQ">
+            <con2:id>_ActionId-7987006613725141329--265a5d4e.15659e5a71c.-7f00</con2:id>
+            <con1:expr>
+              <con2:xqueryText>&lt;TEXT>999&lt;/TEXT></con2:xqueryText>
+            </con1:expr>
+          </con1:assign>
+          <con4:report>
+            <con2:id>_ActionId-7987006613725141329--265a5d4e.15659e5a71c.-7eff</con2:id>
+            <con4:expr>
+              <con2:xqueryText>$fault</con2:xqueryText>
+            </con4:expr>
+            <con4:labels>
+              <con4:key>KEY</con4:key>
+              <con4:varName>SC_OT_GetOSBInstanceIDSrvResponse</con4:varName>
+              <con4:value>
+                <con2:xpathText>./return</con2:xpathText>
+              </con4:value>
+            </con4:labels>
+            <con4:labels>
+              <con4:key>SEQ</con4:key>
+              <con4:varName>KEY_SEQ</con4:varName>
+              <con4:value>
+                <con2:xpathText>.</con2:xpathText>
+              </con4:value>
+            </con4:labels>
+            <con4:labels>
+              <con4:key>IP</con4:key>
+              <con4:varName>inbound</con4:varName>
+              <con4:value>
+                <con2:xpathText>./ctx:transport/ctx:request/http:client-address</con2:xpathText>
+              </con4:value>
+            </con4:labels>
+          </con4:report>
+        </con:actions>
+      </con:stage>
+    </con:pipeline>
+    <con:flow>
+      <con:pipeline-node name="PipelinePair">
+        <con:request>PipelinePair_request</con:request>
+        <con:response>PipelinePair_response</con:response>
+      </con:pipeline-node>
+      <con:route-node name="RouteTo_${serverName}" error-handler="_onErrorHandler-7987006613725141329--265a5d4e.15659e5a71c.-7f02">
+        <con:context xmlns:con3="http://www.bea.com/wli/sb/typesystem/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config"/>
+        <con:actions xmlns:con3="http://www.bea.com/wli/sb/typesystem/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config">
+          <con5:route>
+            <con2:id>_ActionId-7987006613725141329--265a5d4e.15659e5a71c.-7f03</con2:id>
+            <con5:service ref="SHMC/BusinessService/SC/${serverName}/${serverName}" xsi:type="ref:BusinessServiceRef" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+            <con5:operation>process</con5:operation>
+            <con5:outboundTransform/>
+            <con5:responseTransform/>
+          </con5:route>
+        </con:actions>
+      </con:route-node>
+    </con:flow>
+  </ser:router>
+</xml-fragment>

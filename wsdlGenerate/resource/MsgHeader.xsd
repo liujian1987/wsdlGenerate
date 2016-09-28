@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://mss.cmcc.com/MsgHeader" xmlns:tns="http://mss.cmcc.com/MsgHeader" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<xsd:complexType name="MsgHeader">
+		<xsd:sequence>
+			<xsd:element name="SOURCESYSTEMID" nillable="true" type="xsd:string"/>
+			<xsd:element name="SOURCESYSTEMNAME" nillable="true" type="xsd:string"/>
+			<xsd:element name="USERID" nillable="true" type="xsd:string"/>
+			<xsd:element name="USERNAME" nillable="true" type="xsd:string"/>
+			<xsd:element name="SUBMITDATE" nillable="true" type="xsd:dateTime"/>
+			<xsd:element name="PAGE_SIZE" nillable="true" type="xsd:decimal"/>
+			<xsd:element name="CURRENT_PAGE" nillable="true" type="xsd:decimal"/>
+			<xsd:element name="TOTAL_RECORD" nillable="true" type="xsd:decimal"/>
+			<xsd:element name="PROVINCE_CODE" nillable="true" type="xsd:string"/>
+			<xsd:element name="ENVIRONMENT_NAME" nillable="true" type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>
